@@ -30,6 +30,7 @@ end
 
 function fourier(x::Float64, i::Integer, d::Integer)
     return cispi.(i*x) / sqrt(d)
+    #return cispi.(i*x)
 end
 
 function get_fourier_freqs(d)

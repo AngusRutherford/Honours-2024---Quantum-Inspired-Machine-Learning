@@ -86,7 +86,7 @@ function loss_grad_MSE(::TrainSeparate{false}, BT::ITensor, LE::PCache, RE::PCac
     # Assumes that the timeseries are sorted by class
  
     TSs = ETSs.timeseries
-    loss,grad = Folds.mapreduce((LEP,REP, prod_state) -> MSE_iter(BT,LEP,REP,prod_state,lid,rid),+, eachcol(LE), eachcol(RE),TSs)
+    loss,grad = mapreduce((LEP,REP, prod_state) -> MSE_iter(BT,LEP,REP,prod_state,lid,rid),+, eachcol(LE), eachcol(RE),TSs)
     
     loss /= length(TSs)
     grad ./= length(TSs)
@@ -136,11 +136,11 @@ function loss_grad_KLD(::TrainSeparate{true}, BT::ITensor, LE::PCache, RE::PCach
         bt = BT * y
 
         c_inds = (i_prev+1):(cn + i_prev)
-        loss, grad = Folds.mapreduce((LEP,REP, prod_state) -> KLD_iter(bt,LEP,REP,prod_state,lid,rid),+, eachcol(LE)[c_inds], eachcol(RE)[c_inds],TSs[c_inds])
+        loss, grad = mapreduce((LEP,REP, prod_state) -> KLD_iter(bt,LEP,REP,prod_state,lid,rid),+, eachcol(LE)[c_inds], eachcol(RE)[c_inds],TSs[c_inds])
 
         losses += loss / cn # * y # maybe doing this with a combiner instead will be more efficient
         grads += grad * y / cn
-        i_prev = cn
+        i_prev += cn
     end
 
 
@@ -170,14 +170,14 @@ function loss_grad_KLD(::TrainSeparate{false}, BT::ITensor, LE::PCache, RE::PCac
         # sleep(30)
 
         c_inds = (i_prev+1):(cn+i_prev)
-        loss, grad = Folds.mapreduce((LEP,REP, prod_state) -> KLD_iter(bt,LEP,REP,prod_state,lid,rid),+, eachcol(LE)[c_inds], eachcol(RE)[c_inds],TSs[c_inds])
+        loss, grad = mapreduce((LEP,REP, prod_state) -> KLD_iter(bt,LEP,REP,prod_state,lid,rid),+, eachcol(LE)[c_inds], eachcol(RE)[c_inds],TSs[c_inds])
 
         losses += loss / cn # maybe doing this with a combiner instead will be more efficient
         # @show grads
         # @show grads * y
         # sleep(30)
         grads += grad * y / cn
-        i_prev = cn
+        i_prev += cn
     end
 
     losses /= length(TSs)
@@ -227,7 +227,7 @@ function loss_grad_mixed_iter(::TrainSeparate{false}, BT::ITensor, LE::PCache, R
     # Assumes that the timeseries are sorted by class
  
     TSs = ETSs.timeseries
-    loss,grad = Folds.mapreduce((LEP,REP, prod_state) -> mixed_iter(BT,LEP,REP,prod_state,lid,rid; alpha=alpha),+, eachcol(LE), eachcol(RE),TSs)
+    loss,grad = mapreduce((LEP,REP, prod_state) -> mixed_iter(BT,LEP,REP,prod_state,lid,rid; alpha=alpha),+, eachcol(LE), eachcol(RE),TSs)
     
     loss /= length(TSs)
     grad ./= length(TSs)
@@ -245,7 +245,7 @@ function loss_grad_default(::TrainSeparate{false}, BT::ITensor, LE::PCache, RE::
     # Assumes that the timeseries are sorted by class
  
     TSs = ETSs.timeseries
-    loss,grad = Folds.mapreduce((LEP,REP, prod_state) -> lg_iter(BT,LEP,REP,prod_state,lid,rid),+, eachcol(LE), eachcol(RE),TSs)
+    loss,grad = mapreduce((LEP,REP, prod_state) -> lg_iter(BT,LEP,REP,prod_state,lid,rid),+, eachcol(LE), eachcol(RE),TSs)
     
     loss /= length(TSs)
     grad ./= length(TSs)
@@ -272,7 +272,7 @@ function loss_grad_default(::TrainSeparate{true}, BT::ITensor, LE::PCache, RE::P
         y = onehot(label_idx => ci)
 
         c_inds = (i_prev+1):cn
-        loss, grad = Folds.mapreduce((LEP,REP, prod_state) -> KLD_iter(BT,LEP,REP,prod_state,lid,rid),+, eachcol(LE)[c_inds], eachcol(RE)[c_inds],TSs[c_inds])
+        loss, grad = mapreduce((LEP,REP, prod_state) -> KLD_iter(BT,LEP,REP,prod_state,lid,rid),+, eachcol(LE)[c_inds], eachcol(RE)[c_inds],TSs[c_inds])
 
         losses += loss  / cn # maybe doing this with a combiner instead will be more efficient
         grads += grad / cn
@@ -323,11 +323,11 @@ function loss_grad_KLD(W::MPS, ::TrainSeparate{true}, BT::ITensor, LE::PCache, R
         bt = BT * y
 
         c_inds = (i_prev+1):(cn + i_prev)
-        loss, grad = Folds.mapreduce(( prod_state) -> KLD_iter_terminal(W, bt,prod_state,lid,rid),+,TSs[c_inds])
+        loss, grad = mapreduce(( prod_state) -> KLD_iter_terminal(W, bt,prod_state,lid,rid),+,TSs[c_inds])
 
         losses += loss / cn # * y # maybe doing this with a combiner instead will be more efficient
         grads += grad * y / cn
-        i_prev = cn
+        i_prev += cn
     end
 
 
@@ -354,11 +354,11 @@ function loss_grad_KLD(W::MPS, ::TrainSeparate{false}, BT::ITensor, LE::PCache, 
         bt = BT * y
 
         c_inds = (i_prev+1):(cn+i_prev)
-        loss, grad = Folds.mapreduce((prod_state) -> KLD_iter(W,bt,prod_state,lid,rid),+,TSs[c_inds])
+        loss, grad = mapreduce((prod_state) -> KLD_iter(W,bt,prod_state,lid,rid),+,TSs[c_inds])
 
         losses += loss # maybe doing this with a combiner instead will be more efficient
         grads += grad * y 
-        i_prev = cn
+        i_prev += cn
     end
 
     losses /= length(TSs)
@@ -379,7 +379,7 @@ function loss_grad_KLD_slow(::TrainSeparate{false}, BT::ITensor, LE::PCache, RE:
  
     TSs = ETSs.timeseries
     l = findindex(BT, "f(x)")
-    loss,grad = Folds.mapreduce((LEP,REP, prod_state) -> [1.0, onehot(l => prod_state.label_index)] .* KLD_iter(BT * onehot(l => prod_state.label_index),LEP,REP,prod_state,lid,rid),+, eachcol(LE), eachcol(RE),TSs)
+    loss,grad = mapreduce((LEP,REP, prod_state) -> [1.0, onehot(l => prod_state.label_index)] .* KLD_iter(BT * onehot(l => prod_state.label_index),LEP,REP,prod_state,lid,rid),+, eachcol(LE), eachcol(RE),TSs)
     
     loss /= length(TSs)
     grad ./= length(TSs)

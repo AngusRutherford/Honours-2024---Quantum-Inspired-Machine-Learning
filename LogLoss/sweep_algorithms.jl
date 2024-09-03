@@ -12,7 +12,7 @@ function OBC(W::MPS,
     testing_states = testing_states_meta.timeseries
     tsep = TrainSeparate{opts.train_classes_separately}() # value type to determine training style
     nsweeps = opts.nsweeps
-
+    test_lists = []
     for itS = 1:nsweeps
         start = time()
         verbosity > -1 && println("Using optimiser $(bbopts[itS].name) with the \"$(bbopts[itS].fl)\" algorithm")
@@ -106,7 +106,7 @@ function OBC(W::MPS,
         push!(training_information["test_KL_div"], test_KL_div)
         push!(training_information["test_conf"], conf)
     end
-    return W, training_information
+    return W, training_information, test_lists
 end
 
 function PBC_left(W::MPS,
@@ -117,6 +117,7 @@ function PBC_left(W::MPS,
     loss_grads::AbstractArray,
     bbopts::AbstractArray)
 
+    test_lists = []
     sites = siteinds(W)
     verbosity = opts.verbosity
     training_states = training_states_meta.timeseries
@@ -126,12 +127,13 @@ function PBC_left(W::MPS,
     tsep = TrainSeparate{opts.train_classes_separately}() # value type to determine training style
 
     for itS = 1:nsweeps
+        test_list = []
         start = time()
         verbosity > -1 && println("Using optimiser $(bbopts[itS].name) with the \"$(bbopts[itS].fl)\" algorithm")
         verbosity > -1 && println("Starting left sweeep: [$itS/$nsweeps]")
 
         LE, RE = construct_caches(W, training_states, length(W); going_left=true)
-
+        
         for j = (length(sites)-1):-1:1
             #print("Bond $j")
             # j tracks the LEFT site in the bond tensor (irrespective of sweep direction)
@@ -150,6 +152,7 @@ function PBC_left(W::MPS,
             # update the caches to reflect the new tensors
             update_caches!(lsn, rsn, LE, RE, j, (j+1), training_states; going_left=true)
             # place the updated sites back into the MPS
+            push!(test_list, find_label(W)[1])
             W[j] = lsn
             W[(j+1)] = rsn
         end
@@ -168,6 +171,7 @@ function PBC_left(W::MPS,
 
         # decompose the bond tensor using SVD and truncate according to chi_max and cutoff
         lsn, rsn = decomposeBT(BT_new, lid, rid, left_site_indices; chi_max=opts.chi_max, cutoff=opts.cutoff, going_left=true, dtype=opts.dtype)
+        push!(test_list, find_label(W)[1])
         W[lid] = lsn
         W[rid] = rsn
         # add time taken for backward sweep.
@@ -207,8 +211,9 @@ function PBC_left(W::MPS,
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
         push!(training_information["test_conf"], conf)
+        push!(test_lists, test_list)
     end
-    return W, training_information
+    return W, training_information, test_lists
 end
 
 function PBC_right(W::MPS,
@@ -219,6 +224,7 @@ function PBC_right(W::MPS,
     loss_grads::AbstractArray,
     bbopts::AbstractArray)
 
+    test_lists = []
     sites = siteinds(W)
     verbosity = opts.verbosity
     training_states = training_states_meta.timeseries
@@ -228,6 +234,7 @@ function PBC_right(W::MPS,
     tsep = TrainSeparate{opts.train_classes_separately}() # value type to determine training style
 
     for itS = 1:nsweeps
+        test_list = []
         start = time()
         verbosity > -1 && println("Using optimiser $(bbopts[itS].name) with the \"$(bbopts[itS].fl)\" algorithm")
         verbosity > -1 && println("Starting right sweeep: [$itS/$nsweeps]")
@@ -251,6 +258,7 @@ function PBC_right(W::MPS,
         lsn, rsn = decomposeBT(BT_new, lid, rid, left_site_indices; chi_max=opts.chi_max, cutoff=opts.cutoff, going_left=false, dtype=opts.dtype)
         W[lid] = lsn
         W[rid] = rsn
+        push!(test_list, find_label(W)[1])
         LE, RE = construct_caches(W, training_states, 1; going_left=false)
         for j = 1:(length(sites)-1)
             #print("Bond $j")
@@ -268,6 +276,7 @@ function PBC_right(W::MPS,
             update_caches!(lsn, rsn, LE, RE, j, (j+1), training_states; going_left=false)
             W[j] = lsn
             W[(j+1)] = rsn
+            push!(test_list, find_label(W)[1])
         end
         
         
@@ -308,8 +317,9 @@ function PBC_right(W::MPS,
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
         push!(training_information["test_conf"], conf)
+        push!(test_lists, test_list)
     end
-    return W, training_information
+    return W, training_information, test_lists
 end
 
 function PBC_both_two(W::MPS,
@@ -675,7 +685,6 @@ function optimise_bond(W::MPS,
     elseif !going_left && terminal
         #terminal optiomisation here
         # optimise over terminal ends of MPS
-        println("hi")
         BT = W[lid] * W[rid]
         BT_new = apply_update(tsep, BT, LE, RE, lid, rid, training_states_meta; iters=opts.update_iters, verbosity=verbosity, 
                                     dtype=opts.dtype, loss_grad=loss_grad_terminal, bbopt=bbopts[itS],

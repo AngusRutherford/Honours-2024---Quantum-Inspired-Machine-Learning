@@ -5,7 +5,6 @@ using OptimKit
 using Random
 using Distributions
 using DelimitedFiles
-using Folds
 using JLD2
 using StatsBase
 using Plots
@@ -49,6 +48,23 @@ function find_stable_accuracy(training_accuracies::Vector{Float64}, n::Float64)
     return length(training_accuracies)  # Return index of final element if above condition isn't satisfied  
 end
 
+function find_stable_accuracy_threshold(accuracies)
+    # Ensure there are at least 3 accuracy values to check
+    if length(accuracies) < 3
+        return -1  # Return -1 or an appropriate error value if there are not enough data points
+    end
+    tolerance = 1e-5
+    # Loop through the accuracy array starting from the first element to the third last element
+    for i in 1:(length(accuracies) - 2)
+        # Check if the differences between consecutive accuracies are <= 0.01
+        if abs(accuracies[i+1] - accuracies[i]) <= 0.01 + tolerance && abs(accuracies[i+2] - accuracies[i+1]) <= 0.01 + tolerance
+            return i + 2  # Return the index of the third element in the stable sequence
+        end
+    end
+
+    return length(accuracies)  # Return -1 if no stable sequence is found
+end
+
 function generate_startingMPS(chi_init::Integer, site_indices::Vector{Index{T}};
     num_classes, random_state=nothing, label_tag::String="f(x)", opts::Options=Options(), verbosity::Real=opts.verbosity, dtype::DataType=opts.dtype) where {T <: Integer}
     """Generate the starting weight MPS, W using values sampled from a 
@@ -67,6 +83,8 @@ function generate_startingMPS(chi_init::Integer, site_indices::Vector{Index{T}};
 
     if opts.algorithm == "OBC"
         W = randomMPS(dtype, site_indices, linkdims=chi_init)
+        last_site = length(site_indices)
+        orthogonalize!(W, last_site)
     else
         N = length(site_indices)
         bonds = [Index(chi_init, "Link,l=$l") for l=1:N]
@@ -99,8 +117,8 @@ function generate_startingMPS(chi_init::Integer, site_indices::Vector{Index{T}};
 
     # canonicalise - bring MPS into canonical form by making all tensors 1,...,j-1 left orthogonal
     # here we assume we start at the right most index
-    last_site = length(site_indices)
-    orthogonalize!(W, last_site)
+    # last_site = length(site_indices)
+    # orthogonalize!(W, last_site)
     return W
 end
 
@@ -806,13 +824,13 @@ function fitMPS(W::MPS, training_states_meta::EncodedTimeseriesSet, testing_stat
     end
 
     if opts.algorithm == "OBC"
-        W, training_information = OBC(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
+        W, training_information, test_lists = OBC(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     elseif opts.algorithm == "PBC_left"
-        W, training_information = PBC_left(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
+        W, training_information, test_lists = PBC_left(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     elseif opts.algorithm == "PBC_right"
-        W, training_information = PBC_right(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
+        W, training_information, test_lists = PBC_right(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     elseif opts.algorithm == "PBC_both"
-        W, training_information = PBC_both(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
+        W, training_information, test_lists = PBC_both(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     elseif opts.algorithm == "PBC_both_two"
         W, training_information = PBC_both_two(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     elseif opts.algorithm == "PBC_random"
