@@ -832,7 +832,7 @@ function fitMPS(W::MPS, training_states_meta::EncodedTimeseriesSet, testing_stat
     elseif opts.algorithm == "PBC_both"
         W, training_information, test_lists = PBC_both(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     elseif opts.algorithm == "PBC_both_two"
-        W, training_information = PBC_both_two(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
+        W, training_information, test_lists = PBC_both_two(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     elseif opts.algorithm == "PBC_random"
         W, training_information, test_lists = PBC_random(W, training_states_meta, testing_states_meta, training_information, opts=opts, loss_grads=loss_grads, bbopts=bbopts)
     else

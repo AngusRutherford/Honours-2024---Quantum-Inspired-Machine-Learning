@@ -156,7 +156,10 @@ function PBC_left(W::MPS,
             W[j] = lsn
             W[(j+1)] = rsn
         end
-        
+        train_loss, train_acc = MSE_loss_acc(W, training_states)
+        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #println("HEY MAN TRAINING IS $train_acc.")
+        #println("HEY MAN TESTING IS $test_acc.")
         # optimise over terminal ends of MPS
         lid = length(sites)
         rid = 1
@@ -260,6 +263,10 @@ function PBC_right(W::MPS,
         W[rid] = rsn
         push!(test_list, find_label(W)[1])
         LE, RE = construct_caches(W, training_states, 1; going_left=false)
+        train_loss, train_acc = MSE_loss_acc(W, training_states)
+        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #println("HEY MAN TRAINING IS $train_acc.")
+        #println("HEY MAN TESTING IS $test_acc.")
         for j = 1:(length(sites)-1)
             #print("Bond $j")
             BT = W[j] * W[(j+1)]
