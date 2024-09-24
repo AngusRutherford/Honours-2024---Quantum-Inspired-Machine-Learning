@@ -1,5 +1,6 @@
 include("RealRealHighDimension.jl")
 using Base.Threads
+using DelimitedFiles
 
 dataset_dir = "LogLoss/datasets"
 (X_train, y_train), (X_test, y_test) = load_splits_txt(joinpath(dataset_dir, "ArrowHead_TRAIN.txt"),
