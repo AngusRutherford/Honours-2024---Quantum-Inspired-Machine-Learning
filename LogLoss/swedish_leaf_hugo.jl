@@ -14,7 +14,7 @@ encode_classes_separately = false
 train_classes_separately = false
 dtype = encoding.iscomplex ? ComplexF64 : Float64
 
-N = 10
+N = 20
 seeds = 1:N
 train_accs_OBC = zeros(N, 22) #22 as 20 sweeps, plus acc before first sweep, plus acc after normalisation
 test_accs_OBC = zeros(N, 22)
@@ -72,3 +72,14 @@ for seed = seeds
     train_accs_PBC_random[seed, :] = info["train_acc"]
     test_accs_PBC_random[seed, :] = info["test_acc"]
 end
+
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_train_OBC.csv", train_accs_OBC, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_test_OBC.csv", test_accs_OBC, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_train_PBC_left.csv", train_accs_PBC_left, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_test_PBC_left.csv", test_accs_PBC_left, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_train_PBC_right.csv", train_accs_PBC_right, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_test_PBC_right.csv", test_accs_PBC_right, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_train_PBC_both.csv", train_accs_PBC_both, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_test_PBC_both.csv", test_accs_PBC_both, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_train_PBC_ranom.csv", train_accs_PBC_random, ',')
+writedlm("angus_swedishleaf_leg_chi16_eta02_sweeps20_test_PBC_random.csv", test_accs_PBC_random, ',')
