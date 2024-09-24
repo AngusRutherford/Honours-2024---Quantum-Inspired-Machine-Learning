@@ -758,7 +758,8 @@ function fitMPS(W::MPS, training_states_meta::EncodedTimeseriesSet, testing_stat
 
     # compute initial training and validation acc/loss
     init_train_loss, init_train_acc = MSE_loss_acc(W, training_states)
-    init_test_loss, init_test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+    #init_test_loss, init_test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+    init_test_loss, init_test_acc = MSE_loss_acc(W, testing_states)
 
     train_KL_div = KL_div(W, training_states)
     init_KL_div = KL_div(W, testing_states)
@@ -766,12 +767,12 @@ function fitMPS(W::MPS, training_states_meta::EncodedTimeseriesSet, testing_stat
 
     # print loss and acc
 
-    verbosity > -1 && println("Training MSE loss: $init_train_loss | Training acc. $init_train_acc." )
-    verbosity > -1 && println("Testing MSE loss: $init_test_loss | Testing acc. $init_test_acc." )
-    verbosity > -1 && println("")
-    verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-    verbosity > -1 && println("Test KL Divergence: $init_KL_div.")
-    verbosity > -1 && println("Test conf: $conf.")
+    # verbosity > -1 && println("Training MSE loss: $init_train_loss | Training acc. $init_train_acc." )
+    # verbosity > -1 && println("Testing MSE loss: $init_test_loss | Testing acc. $init_test_acc." )
+    # verbosity > -1 && println("")
+    # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+    # verbosity > -1 && println("Test KL Divergence: $init_KL_div.")
+    #verbosity > -1 && println("Test conf: $conf.")
 
 
 
@@ -797,7 +798,7 @@ function fitMPS(W::MPS, training_states_meta::EncodedTimeseriesSet, testing_stat
     push!(training_information["time_taken"], 0)
     push!(training_information["train_KL_div"], train_KL_div)
     push!(training_information["test_KL_div"], init_KL_div)
-    push!(training_information["test_conf"], conf)
+    #push!(training_information["test_conf"], conf)
 
 
     # initialising loss algorithms
@@ -842,17 +843,18 @@ function fitMPS(W::MPS, training_states_meta::EncodedTimeseriesSet, testing_stat
     verbosity > -1 && println("\nMPS normalised!\n")
     # compute the loss and acc on both training and validation sets post normalisation
     train_loss, train_acc = MSE_loss_acc(W, training_states)
-    test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+    #test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+    test_loss, test_acc = MSE_loss_acc(W, testing_states)
     train_KL_div = KL_div(W, training_states)
     test_KL_div = KL_div(W, testing_states)
 
 
-    verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
-    verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
-    verbosity > -1 && println("")
-    verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-    verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
-    verbosity > -1 && println("Test conf: $conf.")
+    # verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
+    # verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
+    # verbosity > -1 && println("")
+    # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+    # verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
+    #verbosity > -1 && println("Test conf: $conf.")
 
 
     running_train_loss = train_loss
@@ -864,7 +866,7 @@ function fitMPS(W::MPS, training_states_meta::EncodedTimeseriesSet, testing_stat
     push!(training_information["time_taken"], training_information["time_taken"][end]) # no time has passed
     push!(training_information["train_KL_div"], train_KL_div)
     push!(training_information["test_KL_div"], test_KL_div)
-    push!(training_information["test_conf"], conf)
+    #push!(training_information["test_conf"], conf)
 
    
     return W, training_information, training_states_meta, testing_states_meta, test_lists

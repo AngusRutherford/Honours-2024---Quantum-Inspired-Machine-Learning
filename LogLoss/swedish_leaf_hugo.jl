@@ -2,8 +2,8 @@ include("RealRealHighDimension.jl")
 using Base.Threads
 
 # might have to load it in differently
-(X_train, y_train), (X_test, y_test) = load_splits_txt("/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TRAIN.txt", 
-"/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TEST.txt", "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TEST.txt")
+(X_train, y_train), (X_test, y_test) = load_splits_txt("/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/SwedishLeaf_TRAIN.txt", 
+"/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/SwedishLeaf_TEST.txt", "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/SwedishLeaf_TEST.txt")
 
 verbosity = 0
 test_run = false
@@ -30,7 +30,7 @@ end
 shift_seed = MersenneTwister(12345)
 X_train = random_circshift(X_train, shift_seed) # randomly assign phase to each image
 X_test = random_circshift(X_test, shift_seed)
-total_seeds = N
+N = 1
 seeds = 1:N
 train_accs_OBC = zeros(N, 22) #22 as 20 sweeps, plus acc before first sweep, plus acc after normalisation
 test_accs_OBC = zeros(N, 22)
@@ -46,13 +46,13 @@ train_accs_PBC_random = zeros(N, 22)
 test_accs_PBC_random = zeros(N, 22)
 Threads.@threads for seed = seeds
     # OBC
-    opts=Options(; nsweeps=20, chi_max=16,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
-    bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.2, rescale = (false, true), d=4, aux_basis_dim=2, encoding=encoding, 
-    encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
+    # opts=Options(; nsweeps=20, chi_max=16,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
+    # bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.2, rescale = (false, true), d=4, aux_basis_dim=2, encoding=encoding, 
+    # encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
 
-    W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=seed, chi_init=4, opts=opts, test_run=false)
-    train_accs_OBC[seed, :] = info["train_acc"]
-    test_accs_OBC[seed, :] = info["test_acc"]
+    # W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=seed, chi_init=4, opts=opts, test_run=false)
+    # train_accs_OBC[seed, :] = info["train_acc"]
+    # test_accs_OBC[seed, :] = info["test_acc"]
 
     # PBC left
     opts=Options(; nsweeps=20, chi_max=16,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,

@@ -80,7 +80,8 @@ function OBC(W::MPS,
 
         # compute the loss and acc on both training and validation sets
         train_loss, train_acc = MSE_loss_acc(W, training_states)
-        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        test_loss, test_acc = MSE_loss_acc(W, testing_states)
         train_KL_div = KL_div(W, training_states)
         test_KL_div = KL_div(W, testing_states)
 
@@ -89,12 +90,12 @@ function OBC(W::MPS,
         # if !isempty(dot_errs)
         #     @warn "Found mismatching values between inner() and MPS_contract at Sites: $dot_errs"
         # end
-        verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
-        verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
-        verbosity > -1 && println("")
-        verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-        verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
-        verbosity > -1 && println("Test conf: $conf.")
+        # verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
+        # verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
+        # verbosity > -1 && println("")
+        # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+        # verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
+        # verbosity > -1 && println("Test conf: $conf.")
 
 
         push!(training_information["train_loss"], train_loss)
@@ -104,7 +105,7 @@ function OBC(W::MPS,
         push!(training_information["time_taken"], time_elapsed)
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
-        push!(training_information["test_conf"], conf)
+        #push!(training_information["test_conf"], conf)
     end
     return W, training_information, test_lists
 end
@@ -189,7 +190,8 @@ function PBC_left(W::MPS,
 
         # compute the loss and acc on both training and validation sets
         train_loss, train_acc = MSE_loss_acc(W, training_states)
-        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        test_loss, test_acc = MSE_loss_acc(W, testing_states)
         train_KL_div = KL_div(W, training_states)
         test_KL_div = KL_div(W, testing_states)
 
@@ -198,12 +200,12 @@ function PBC_left(W::MPS,
         # if !isempty(dot_errs)
         #     @warn "Found mismatching values between inner() and MPS_contract at Sites: $dot_errs"
         # end
-        verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
-        verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
-        verbosity > -1 && println("")
-        verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-        verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
-        verbosity > -1 && println("Test conf: $conf.")
+        # verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
+        # verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
+        # verbosity > -1 && println("")
+        # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+        # verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
+        # verbosity > -1 && println("Test conf: $conf.")
         
 
         push!(training_information["train_loss"], train_loss)
@@ -213,7 +215,7 @@ function PBC_left(W::MPS,
         push!(training_information["time_taken"], time_elapsed)
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
-        push!(training_information["test_conf"], conf)
+        #push!(training_information["test_conf"], conf)
         push!(test_lists, test_list)
     end
     return W, training_information, test_lists
@@ -299,7 +301,8 @@ function PBC_right(W::MPS,
 
         # compute the loss and acc on both training and validation sets
         train_loss, train_acc = MSE_loss_acc(W, training_states)
-        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        test_loss, test_acc = MSE_loss_acc(W, testing_states)
         train_KL_div = KL_div(W, training_states)
         test_KL_div = KL_div(W, testing_states)
 
@@ -308,12 +311,12 @@ function PBC_right(W::MPS,
         # if !isempty(dot_errs)
         #     @warn "Found mismatching values between inner() and MPS_contract at Sites: $dot_errs"
         # end
-        verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
-        verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
-        verbosity > -1 && println("")
-        verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-        verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
-        verbosity > -1 && println("Test conf: $conf.")
+        # verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
+        # verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
+        # verbosity > -1 && println("")
+        # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+        # verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
+        #verbosity > -1 && println("Test conf: $conf.")
         
 
         push!(training_information["train_loss"], train_loss)
@@ -323,7 +326,7 @@ function PBC_right(W::MPS,
         push!(training_information["time_taken"], time_elapsed)
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
-        push!(training_information["test_conf"], conf)
+        #push!(training_information["test_conf"], conf)
         push!(test_lists, test_list)
     end
     return W, training_information, test_lists
@@ -449,7 +452,8 @@ function PBC_both_two(W::MPS,
 
         # compute the loss and acc on both training and validation sets
         train_loss, train_acc = MSE_loss_acc(W, training_states)
-        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        test_loss, test_acc = MSE_loss_acc(W, testing_states)
         train_KL_div = KL_div(W, training_states)
         test_KL_div = KL_div(W, testing_states)
 
@@ -458,12 +462,12 @@ function PBC_both_two(W::MPS,
         # if !isempty(dot_errs)
         #     @warn "Found mismatching values between inner() and MPS_contract at Sites: $dot_errs"
         # end
-        verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
-        verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
-        verbosity > -1 && println("")
-        verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-        verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
-        verbosity > -1 && println("Test conf: $conf.")
+        # verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
+        # verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
+        # verbosity > -1 && println("")
+        # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+        # verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
+        # verbosity > -1 && println("Test conf: $conf.")
         
 
         push!(training_information["train_loss"], train_loss)
@@ -473,7 +477,7 @@ function PBC_both_two(W::MPS,
         push!(training_information["time_taken"], time_elapsed)
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
-        push!(training_information["test_conf"], conf)
+        #push!(training_information["test_conf"], conf)
         push!(test_lists, test_list)
     end
     return W, training_information, test_lists
@@ -601,7 +605,8 @@ function PBC_both(W::MPS,
 
         # compute the loss and acc on both training and validation sets
         train_loss, train_acc = MSE_loss_acc(W, training_states)
-        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        test_loss, test_acc = MSE_loss_acc(W, testing_states)
         train_KL_div = KL_div(W, training_states)
         test_KL_div = KL_div(W, testing_states)
 
@@ -610,12 +615,12 @@ function PBC_both(W::MPS,
         # if !isempty(dot_errs)
         #     @warn "Found mismatching values between inner() and MPS_contract at Sites: $dot_errs"
         # end
-        verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
-        verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
-        verbosity > -1 && println("")
-        verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-        verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
-        verbosity > -1 && println("Test conf: $conf.")
+        # verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
+        # verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
+        # verbosity > -1 && println("")
+        # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+        # verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
+        # verbosity > -1 && println("Test conf: $conf.")
         
 
         push!(training_information["train_loss"], train_loss)
@@ -625,7 +630,7 @@ function PBC_both(W::MPS,
         push!(training_information["time_taken"], time_elapsed)
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
-        push!(training_information["test_conf"], conf)
+        #push!(training_information["test_conf"], conf)
         push!(test_lists, test_list)
     end
     return W, training_information, test_lists
@@ -795,7 +800,8 @@ function PBC_random(W::MPS,
 
         # compute the loss and acc on both training and validation sets
         train_loss, train_acc = MSE_loss_acc(W, training_states)
-        test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        #test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
+        test_loss, test_acc = MSE_loss_acc(W, testing_states)
         train_KL_div = KL_div(W, training_states)
         test_KL_div = KL_div(W, testing_states)
 
@@ -804,12 +810,12 @@ function PBC_random(W::MPS,
         # if !isempty(dot_errs)
         #     @warn "Found mismatching values between inner() and MPS_contract at Sites: $dot_errs"
         # end
-        verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
-        verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
-        verbosity > -1 && println("")
-        verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
-        verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
-        verbosity > -1 && println("Test conf: $conf.")
+        # verbosity > -1 && println("Training MSE loss: $train_loss | Training acc. $train_acc." )
+        # verbosity > -1 && println("Testing MSE loss: $test_loss | Testing acc. $test_acc." )
+        # verbosity > -1 && println("")
+        # verbosity > -1 && println("Training KL Divergence: $train_KL_div.")
+        # verbosity > -1 && println("Test KL Divergence: $test_KL_div.")
+        # verbosity > -1 && println("Test conf: $conf.")
         
 
         push!(training_information["train_loss"], train_loss)
@@ -819,7 +825,7 @@ function PBC_random(W::MPS,
         push!(training_information["time_taken"], time_elapsed)
         push!(training_information["train_KL_div"], train_KL_div)
         push!(training_information["test_KL_div"], test_KL_div)
-        push!(training_information["test_conf"], conf)
+        #push!(training_information["test_conf"], conf)
         push!(test_lists, test_list)
     end
     return W, training_information, test_lists
