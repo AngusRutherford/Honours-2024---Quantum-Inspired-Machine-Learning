@@ -1,6 +1,7 @@
 include("RealRealHighDimension.jl")
 
 using Base.Threads
+using DelimitedFiles
 
 setprecision(BigFloat, 128)
 Rdtype = Float64
@@ -34,16 +35,16 @@ train_accs_OBC = zeros(20, 19)
 test_accs_OBC = zeros(20, 19)
 train_accs_PBC = zeros(20, 19)
 test_accs_PBC = zeros(20, 19)
-Threads.@threads for betas = 0.1
+Threads.@threads for betas = 0.1:0.1:2
     β_1 = betas
     β_2 = -betas
-    for corr_loc = 1:2
+    for corr_loc = 1:19
         train_OBC_vec = []
         test_OBC_vec = []
         train_PBC_vec = []
         test_PBC_vec = []
-        for seed_1 = 1:2
-            seed_2 = seed_1 + 100
+        for seed_1 = 1:20
+            seed_2 = seed_1 + 20
             rng_1 = MersenneTwister(seed_1)
             rng_2 = MersenneTwister(seed_2)
             dataset_1 = zeros(M, N)
@@ -84,3 +85,8 @@ Threads.@threads for betas = 0.1
         test_accs_PBC[Int(10*betas), corr_loc] = mean(test_PBC_vec)
     end
 end
+
+writedlm("angus_correlation_alphapm04_eta03_train_OBC.csv", train_accs_OBC, ',')
+writedlm("angus_correlation_alphapm04_eta03_test_OBC.csv", test_accs_OBC, ',')
+writedlm("angus_correlation_alphapm04_eta03_train_PBC.csv", train_accs_PBC, ',')
+writedlm("angus_correlation_alphapm04_eta03_test_PBC.csv", test_accs_PBC, ',')
