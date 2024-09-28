@@ -27,6 +27,10 @@ function makeDataSet(N, α, β, corr_location, rng)
     return x
 end
 
+seed_1 = 69
+seed_2 = 420 # blaze it
+rng_1 = MersenneTwister(seed_1)
+rng_2 = MersenneTwister(seed_2)
 α_1 = 0.4
 α_2 = -0.4
 N = 20
@@ -43,19 +47,16 @@ Threads.@threads for betas = 0.1:0.1:2
         test_OBC_vec = []
         train_PBC_vec = []
         test_PBC_vec = []
-        for seed_1 = 1:20
-            seed_2 = seed_1 + 20
-            rng_1 = MersenneTwister(seed_1)
-            rng_2 = MersenneTwister(seed_2)
-            dataset_1 = zeros(M, N)
-            dataset_2 = zeros(M, N)
-            for i in 1:M
-                dataset_1[i, :] = makeDataSet(N, α_1, β_1, corr_loc+1, rng_1)
-            end
-            
-            for i in 1:M
-                dataset_2[i, :] = makeDataSet(N, α_2, β_2, corr_loc+1, rng_2)
-            end
+        dataset_1 = zeros(M, N)
+        dataset_2 = zeros(M, N)
+        for i in 1:M
+            dataset_1[i, :] = makeDataSet(N, α_1, β_1, corr_loc+1, rng_1)
+        end
+        
+        for i in 1:M
+            dataset_2[i, :] = makeDataSet(N, α_2, β_2, corr_loc+1, rng_2)
+        end
+        for seed = 661:700
 
             X_train = vcat(dataset_1[1:Int(M/2), :], dataset_2[1:Int(M/2), :])
             X_test = vcat(dataset_1[Int(M/2)+1:M, :], dataset_2[Int(M/2)+1:M, :])
@@ -67,7 +68,7 @@ Threads.@threads for betas = 0.1:0.1:2
             bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
             encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
 
-            W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
+            W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=seed, chi_init=4, opts=opts, test_run=false)
             push!(train_OBC_vec, info["train_acc"][end])
             push!(test_OBC_vec, info["test_acc"][end])
 
@@ -75,7 +76,7 @@ Threads.@threads for betas = 0.1:0.1:2
             bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
             encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "PBC_left", random_walk_seed = 100)
 
-            W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
+            W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=seed, chi_init=4, opts=opts, test_run=false)
             push!(train_PBC_vec, info["train_acc"][end])
             push!(test_PBC_vec, info["test_acc"][end])
         end
@@ -86,7 +87,7 @@ Threads.@threads for betas = 0.1:0.1:2
     end
 end
 
-writedlm("angus_correlation_alphapm04_eta03_train_OBC.csv", train_accs_OBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_test_OBC.csv", test_accs_OBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_train_PBC.csv", train_accs_PBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_test_PBC.csv", test_accs_PBC, ',')
+writedlm("angus_correlation_alphapm04_eta03_train_OBC_seed_661_700.csv", train_accs_OBC, ',')
+writedlm("angus_correlation_alphapm04_eta03_test_OBC_seed_661_700.csv", test_accs_OBC, ',')
+writedlm("angus_correlation_alphapm04_eta03_train_PBC_seed_661_700.csv", train_accs_PBC, ',')
+writedlm("angus_correlation_alphapm04_eta03_test_PBC_seed_661_700.csv", test_accs_PBC, ',')
