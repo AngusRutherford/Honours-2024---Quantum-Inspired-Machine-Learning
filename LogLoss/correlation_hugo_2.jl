@@ -31,8 +31,8 @@ seed_1 = 69
 seed_2 = 420 # blaze it
 rng_1 = MersenneTwister(seed_1)
 rng_2 = MersenneTwister(seed_2)
-α_1 = 0.4
-α_2 = -0.4
+α_1 = 0
+α_2 = 0
 N = 20
 M = 300
 train_accs_OBC = zeros(20, 19)
@@ -101,7 +101,7 @@ Threads.@threads for seed in 661:700
     end
 end
 
-writedlm("angus_correlation_alphapm04_eta03_train_OBC_seed_661_700.csv", train_accs_OBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_test_OBC_seed_661_700.csv", test_accs_OBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_train_PBC_seed_661_700.csv", train_accs_PBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_test_PBC_seed_661_700.csv", test_accs_PBC, ',')
+writedlm("angus_correlation_alphapm00_eta03_train_OBC_seed_661_700.csv", train_accs_OBC, ',')
+writedlm("angus_correlation_alphapm00_eta03_test_OBC_seed_661_700.csv", test_accs_OBC, ',')
+writedlm("angus_correlation_alphapm00_eta03_train_PBC_seed_661_700.csv", train_accs_PBC, ',')
+writedlm("angus_correlation_alphapm00_eta03_test_PBC_seed_661_700.csv", test_accs_PBC, ',')
