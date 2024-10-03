@@ -13,6 +13,9 @@ function OBC(W::MPS,
     tsep = TrainSeparate{opts.train_classes_separately}() # value type to determine training style
     nsweeps = opts.nsweeps
     test_lists = []
+    # num_BTs = 0
+    # BTs_train_accs = []
+    # BTs_test_accs = []
     for itS = 1:nsweeps
         start = time()
         verbosity > -1 && println("Using optimiser $(bbopts[itS].name) with the \"$(bbopts[itS].fl)\" algorithm")
@@ -28,7 +31,6 @@ function OBC(W::MPS,
                                     dtype=opts.dtype, loss_grad=loss_grads[itS], bbopt=bbopts[itS],
                                     track_cost=opts.track_cost, eta=opts.eta, rescale = opts.rescale) # optimise bond tensor
 
-
             left_site_indices = inds(W[j])
             label_index = findindex(BT, "f(x)")
             left_site_indices = [left_site_indices..., label_index]
@@ -41,6 +43,11 @@ function OBC(W::MPS,
             # place the updated sites back into the MPS
             W[j] = lsn
             W[(j+1)] = rsn
+            # num_BTs +=1
+            # if num_BTs % ceil(length(W)/5) == 0
+            #     test_loss, test_acc = MSE_loss_acc(W, testing_states)
+            #     push!(BTs_test_accs, test_acc)
+            # end
         end
     
         # add time taken for backward sweep.
@@ -68,6 +75,11 @@ function OBC(W::MPS,
             update_caches!(lsn, rsn, LE, RE, j, (j+1), training_states; going_left=false)
             W[j] = lsn
             W[(j+1)] = rsn
+            # num_BTs +=1
+            # if num_BTs % ceil(length(W)/5) == 0
+            #     test_loss, test_acc = MSE_loss_acc(W, testing_states)
+            #     push!(BTs_test_accs, test_acc)
+            # end
         end
 
         
@@ -119,6 +131,9 @@ function PBC_left(W::MPS,
     bbopts::AbstractArray)
 
     test_lists = []
+    # num_BTs = 0
+    # BTs_train_accs = []
+    # BTs_test_accs = []
     sites = siteinds(W)
     verbosity = opts.verbosity
     training_states = training_states_meta.timeseries
@@ -156,6 +171,11 @@ function PBC_left(W::MPS,
             push!(test_list, find_label(W)[1])
             W[j] = lsn
             W[(j+1)] = rsn
+            # num_BTs +=1
+            # if num_BTs % ceil(length(W)/5) == 0
+            #     test_loss, test_acc = MSE_loss_acc(W, testing_states)
+            #     push!(BTs_test_accs, test_acc)
+            # end
         end
         train_loss, train_acc = MSE_loss_acc(W, training_states)
         test_loss, test_acc, conf = MSE_loss_acc_conf(W, testing_states)
@@ -178,6 +198,11 @@ function PBC_left(W::MPS,
         push!(test_list, find_label(W)[1])
         W[lid] = lsn
         W[rid] = rsn
+        # num_BTs +=1
+        #     if num_BTs % ceil(length(W)/5) == 0
+        #         test_loss, test_acc = MSE_loss_acc(W, testing_states)
+        #         push!(BTs_test_accs, test_acc)
+        #     end
         # add time taken for backward sweep.
         verbosity > -1 && println("Left sweep finished.")
         

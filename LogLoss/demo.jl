@@ -1,9 +1,9 @@
 include("RealRealHighDimension.jl")
 
 using DelimitedFiles
-using DataFrames
-(X_train, y_train), (X_val, y_val), (X_test, y_test) = load_splits_txt("LogLoss/datasets/ECG_train.txt", 
-"LogLoss/datasets/ECG_val.txt", "LogLoss/datasets/ECG_test.txt")
+# using DataFrames
+# (X_train, y_train), (X_val, y_val), (X_test, y_test) = load_splits_txt("LogLoss/datasets/ECG_train.txt", 
+# "LogLoss/datasets/ECG_val.txt", "LogLoss/datasets/ECG_test.txt")
 # X_train = readdlm("/Users/angusrutherford/Desktop/Honours/Project/Code/iTensor/swedish_leaf_6_9_shifted_TRAIN.csv", ',')
 # X_test = readdlm("/Users/angusrutherford/Desktop/Honours/Project/Code/iTensor/swedish_leaf_6_9_shifted_TEST.csv", ',')
 # y_train = readdlm("/Users/angusrutherford/Desktop/Honours/Project/Code/iTensor/swedish_leaf_6_9_shifted_TRAIN_labels.csv", ',')
@@ -45,6 +45,8 @@ using DataFrames
 # file_path_test = "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/SwedishLeaf_TEST.txt"
 # (X_train, y_train), (X_test, y_test) = load_splits_txt("/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/SwedishLeaf_TRAIN.txt", 
 # "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/SwedishLeaf_TEST.txt", "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/SwedishLeaf_TEST.txt")
+# (X_train, y_train), (X_test, y_test) = load_splits_txt("/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TRAIN.txt", 
+# "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TEST.txt", "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TEST.txt")
 # file_path_train = "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TRAIN.txt"
 # file_path_test = "/Users/angusrutherford/Desktop/Honours/Project/Code/QuantumInspiredML/LogLoss/datasets/ArrowHead_TEST.txt"
 
@@ -159,31 +161,34 @@ verbosity = 0
 test_run = false
 track_cost = false
 #
-encoding = legendre(norm=false)
+encoding = legendre()
 encode_classes_separately = false
 train_classes_separately = false
 
 #encoding = Basis("Legendre")
 dtype = encoding.iscomplex ? ComplexF64 : Float64
 
-opts=Options(; nsweeps=20, chi_max=40,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
-bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.1, rescale = (false, true), d=12, aux_basis_dim=2, encoding=encoding, 
-encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
+# opts=Options(; nsweeps=20, chi_max=40,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
+# bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.1, rescale = (false, true), d=12, aux_basis_dim=2, encoding=encoding, 
+# encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
 
 
-if test_run
-    W, info, train_states, test_states, p = fitMPS(X_train, y_train,  X_test, y_test; random_state=456, chi_init=4, opts=opts, test_run=true)
-    plot(p)
-else
-    W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
+# if test_run
+#     W, info, train_states, test_states, p = fitMPS(X_train, y_train,  X_test, y_test; random_state=456, chi_init=4, opts=opts, test_run=true)
+#     plot(p)
+# else
+#     W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
 
-    #print_opts(opts)
-    summary = get_training_summary(W, train_states.timeseries, test_states.timeseries; print_stats=false);
-    sweep_summary(info)
-end
+#     #print_opts(opts)
+#     summary = get_training_summary(W, train_states.timeseries, test_states.timeseries; print_stats=false);
+#     sweep_summary(info)
+# end
 
+# opts=Options(; nsweeps=20, chi_max=16,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
+# bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.1, rescale = (false, true), d=4, aux_basis_dim=2, encoding=encoding, 
+# encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "PBC_left", random_walk_seed = 100)
 
-
+# W, info, train_states, test_states, test_lists, BTs_test_accs = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
 # train_accs_OBC = zeros(5, 10)
 # test_accs_OBC = zeros(5, 10)
 # train_loss_OBC = zeros(5, 10)
@@ -220,77 +225,77 @@ end
 #     end
 # end
 
-# function makeDataSet(N, α, β, corr_location, rng)
-#     x = zeros(N)
-#     for i in 1:N
-#         if i == 1
-#             x[i] = randn(rng)
-#         else
-#             x[i] = α * x[i-1] + randn(rng)
-#         end
-#     end
-#     x[1] += β * x[corr_location]
-#     return x
-# end
+function makeDataSet(N, α, β, corr_location, rng)
+    x = zeros(N)
+    for i in 1:N
+        if i == 1
+            x[i] = randn(rng)
+        else
+            x[i] = α * x[i-1] + randn(rng)
+        end
+    end
+    x[1] += β * x[corr_location]
+    return x
+end
 
-# seed_1 = 22
-# seed_2 = 16
-# α_1 = 0.5
-# α_2 = -0.5
-# N = 20
-# M = 300
-# #corr_loc = 2
-# train_accs_OBC = zeros(20, 19)
-# test_accs_OBC = zeros(20, 19)
-# train_accs_PBC = zeros(20, 19)
-# test_accs_PBC = zeros(20, 19)
-# # train_accs_OBC = []
-# # test_accs_OBC = []
-# # train_accs_PBC = []
-# # test_accs_PBC = []
-# for betas = 0.1:0.1:2
-#     β_1 = betas
-#     β_2 = -betas
-#     for corr_loc = 1:19
-#         rng_1 = MersenneTwister(seed_1)
-#         rng_2 = MersenneTwister(seed_2)
-#         dataset_1 = zeros(M, N)
-#         dataset_2 = zeros(M, N)
-#         for i in 1:M
-#             dataset_1[i, :] = makeDataSet(N, α_1, β_1, corr_loc+1, rng_1)
-#         end
+seed_1 = 223
+seed_2 = 163
+α_1 = 0.4
+α_2 = -0.4
+N = 20
+M = 300
+#corr_loc = 2
+train_accs_OBC = zeros(20, 19)
+test_accs_OBC = zeros(20, 19)
+train_accs_PBC = zeros(20, 19)
+test_accs_PBC = zeros(20, 19)
+# train_accs_OBC = []
+# test_accs_OBC = []
+# train_accs_PBC = []
+# test_accs_PBC = []
+for betas = 0.1:0.1:2
+    β_1 = betas
+    β_2 = -betas
+    for corr_loc = 1:19
+        rng_1 = MersenneTwister(seed_1)
+        rng_2 = MersenneTwister(seed_2)
+        dataset_1 = zeros(M, N)
+        dataset_2 = zeros(M, N)
+        for i in 1:M
+            dataset_1[i, :] = makeDataSet(N, α_1, β_1, corr_loc+1, rng_1)
+        end
         
-#         for i in 1:M
-#             dataset_2[i, :] = makeDataSet(N, α_2, β_2, corr_loc+1, rng_2)
-#         end
+        for i in 1:M
+            dataset_2[i, :] = makeDataSet(N, α_2, β_2, corr_loc+1, rng_2)
+        end
 
-#         X_train = vcat(dataset_1[1:Int(M/2), :], dataset_2[1:Int(M/2), :])
-#         X_test = vcat(dataset_1[Int(M/2)+1:M, :], dataset_2[Int(M/2)+1:M, :])
-#         y_train = vcat(Int.(zeros(Int(M/2))), Int.(ones(Int(M/2))))
-#         y_test = vcat(Int.(zeros(Int(M/2))), Int.(ones(Int(M/2))))
+        X_train = vcat(dataset_1[1:Int(M/2), :], dataset_2[1:Int(M/2), :])
+        X_test = vcat(dataset_1[Int(M/2)+1:M, :], dataset_2[Int(M/2)+1:M, :])
+        y_train = vcat(Int.(zeros(Int(M/2))), Int.(ones(Int(M/2))))
+        y_test = vcat(Int.(zeros(Int(M/2))), Int.(ones(Int(M/2))))
 
 
-#         opts=Options(; nsweeps=30, chi_max=3,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
-#         bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
-#         encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
+        opts=Options(; nsweeps=15, chi_max=3,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
+        bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
+        encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
 
-#         W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
-#         train_accs_OBC[Int(10*betas), corr_loc] = maximum(info["train_acc"])
-#         test_accs_OBC[Int(10*betas), corr_loc] = maximum(info["test_acc"])
-#         # push!(train_accs_OBC, maximum(info["train_acc"]))
-#         # push!(test_accs_OBC, maximum(info["test_acc"]))
+        W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
+        train_accs_OBC[Int(10*betas), corr_loc] = info["train_acc"][end]
+        test_accs_OBC[Int(10*betas), corr_loc] = info["test_acc"][end]
+        # push!(train_accs_OBC, maximum(info["train_acc"]))
+        # push!(test_accs_OBC, maximum(info["test_acc"]))
 
-#         opts=Options(; nsweeps=30, chi_max=3,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
-#         bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
-#         encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "PBC_left", random_walk_seed = 100)
+        opts=Options(; nsweeps=30, chi_max=3,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
+        bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
+        encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "PBC_left", random_walk_seed = 100)
 
-#         W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
-#         train_accs_PBC[Int(10*betas), corr_loc] = maximum(info["train_acc"])
-#         test_accs_PBC[Int(10*betas), corr_loc] = maximum(info["test_acc"])
-#         # push!(train_accs_PBC, maximum(info["train_acc"]))
-#         # push!(test_accs_PBC, maximum(info["test_acc"]))
-#     end
-# end
+        W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
+        train_accs_PBC[Int(10*betas), corr_loc] = info["train_acc"][end]
+        test_accs_PBC[Int(10*betas), corr_loc] = info["test_acc"][end]
+        # push!(train_accs_PBC, maximum(info["train_acc"]))
+        # push!(test_accs_PBC, maximum(info["test_acc"]))
+    end
+end
 
 # train_accuracy = zeros(50, 22)
 # test_accuracy = zeros(50, 22)

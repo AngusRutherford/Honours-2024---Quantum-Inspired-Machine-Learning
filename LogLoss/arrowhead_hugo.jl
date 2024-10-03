@@ -74,13 +74,13 @@ Threads.@threads for seed = seeds
     test_accs_PBC_random[seed, :] = info["test_acc"]
 end
 
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_OBC.csv", train_accs_OBC, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_OBC.csv", test_accs_OBC, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_left.csv", train_accs_PBC_left, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_left.csv", test_accs_PBC_left, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_right.csv", train_accs_PBC_right, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_right.csv", test_accs_PBC_right, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_both.csv", train_accs_PBC_both, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_both.csv", test_accs_PBC_both, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_ranom.csv", train_accs_PBC_random, ',')
-writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_random.csv", test_accs_PBC_random, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_OBC_test.csv", train_accs_OBC, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_OBC_test.csv", test_accs_OBC, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_left_test.csv", train_accs_PBC_left, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_left_test.csv", test_accs_PBC_left, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_right_test.csv", train_accs_PBC_right, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_right_test.csv", test_accs_PBC_right, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_both_test.csv", train_accs_PBC_both, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_both_test.csv", test_accs_PBC_both, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_train_PBC_ranom_test.csv", train_accs_PBC_random, ',')
+writedlm("angus_arrowhead_leg_chi16_eta02_sweeps20_test_PBC_random_test.csv", test_accs_PBC_random, ',')
