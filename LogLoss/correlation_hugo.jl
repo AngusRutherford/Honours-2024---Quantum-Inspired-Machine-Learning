@@ -31,8 +31,8 @@ seed_1 = 69
 seed_2 = 420 # blaze it
 rng_1 = MersenneTwister(seed_1)
 rng_2 = MersenneTwister(seed_2)
-α_1 = 0.4
-α_2 = -0.4
+α_1 = 0.8
+α_2 = 0.8
 N = 20
 M = 300
 train_accs_OBC = zeros(20, 19)
@@ -42,12 +42,12 @@ test_accs_PBC = zeros(20, 19)
 Threads.@threads for betas = 0.1:0.1:2
     β_1 = betas
     β_2 = -betas
-    for corr_loc = 1:19
+    Threads.@threads for corr_loc = 1:19
         train_OBC_vec = []
         test_OBC_vec = []
         train_PBC_vec = []
         test_PBC_vec = []
-        for seed = 700:719
+        for seed = 1600:1619
             dataset_1 = zeros(M, N)
             dataset_2 = zeros(M, N)
             for i in 1:M
@@ -71,6 +71,7 @@ Threads.@threads for betas = 0.1:0.1:2
             W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=seed, chi_init=4, opts=opts, test_run=false)
             push!(train_OBC_vec, info["train_acc"][end])
             push!(test_OBC_vec, info["test_acc"][end])
+            print(info["test_acc"])
 
             opts=Options(; nsweeps=30, chi_max=3,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
             bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
@@ -79,6 +80,7 @@ Threads.@threads for betas = 0.1:0.1:2
             W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=seed, chi_init=4, opts=opts, test_run=false)
             push!(train_PBC_vec, info["train_acc"][end])
             push!(test_PBC_vec, info["test_acc"][end])
+            print(info["test_acc"])
         end
         train_accs_OBC[Int(10*betas), corr_loc] = mean(train_OBC_vec)
         test_accs_OBC[Int(10*betas), corr_loc] = mean(test_OBC_vec)
@@ -87,7 +89,7 @@ Threads.@threads for betas = 0.1:0.1:2
     end
 end
 
-writedlm("angus_correlation_alphapm04_eta03_train_OBC_seed_700-719.csv", train_accs_OBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_test_OBC_seed_700-719.csv", test_accs_OBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_train_PBC_seed_700-719.csv", train_accs_PBC, ',')
-writedlm("angus_correlation_alphapm04_eta03_test_PBC_seed_700-719.csv", test_accs_PBC, ',')
+writedlm("angus_correlation_alpha08_eta03_train_OBC_seed_1600-1619.csv", train_accs_OBC, ',')
+writedlm("angus_correlation_alpha08_eta03_test_OBC_seed_1600-1619.csv", test_accs_OBC, ',')
+writedlm("angus_correlation_alpha08_eta03_train_PBC_seed_1600-1619.csv", train_accs_PBC, ',')
+writedlm("angus_correlation_alpha08_eta03_test_PBC_seed_1600-1619.csv", test_accs_PBC, ',')
