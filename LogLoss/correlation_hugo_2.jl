@@ -31,23 +31,24 @@ seed_1 = 69
 seed_2 = 420 # blaze it
 rng_1 = MersenneTwister(seed_1)
 rng_2 = MersenneTwister(seed_2)
-α_1 = 0.4
-α_2 = 0.4
+α_1 = 0.9
+α_2 = 0.9
 N = 20
 M = 300
 train_accs_OBC = zeros(20, 19)
 test_accs_OBC = zeros(20, 19)
 train_accs_PBC = zeros(20, 19)
 test_accs_PBC = zeros(20, 19)
-Threads.@threads for betas = 0.1:0.1:2
+# Threads.@threads for betas = 0.1:0.1:2
+for betas = 2
     β_1 = betas
     β_2 = -betas
-    for corr_loc = 1:19
+    for corr_loc = 19
         train_OBC_vec = []
         test_OBC_vec = []
         train_PBC_vec = []
         test_PBC_vec = []
-        for seed = 700:719
+        for seed = 700
             dataset_1 = zeros(M, N)
             dataset_2 = zeros(M, N)
             for i in 1:M
@@ -72,7 +73,7 @@ Threads.@threads for betas = 0.1:0.1:2
             push!(train_OBC_vec, info["train_acc"][end])
             push!(test_OBC_vec, info["test_acc"][end])
 
-            opts=Options(; nsweeps=30, chi_max=3,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
+            opts=Options(; nsweeps=1, chi_max=3,  update_iters=1, verbosity=verbosity, dtype=dtype, loss_grad=loss_grad_KLD,
             bbopt=BBOpt("CustomGD", "TSGO"), track_cost=track_cost, eta=0.3, rescale = (false, true), d=2, aux_basis_dim=2, encoding=encoding, 
             encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "PBC_left", random_walk_seed = 100)
 
@@ -87,7 +88,7 @@ Threads.@threads for betas = 0.1:0.1:2
     end
 end
 
-writedlm("angus_correlation_alpha04_eta03_train_OBC_seed_700-719.csv", train_accs_OBC, ',')
-writedlm("angus_correlation_alpha04_eta03_test_OBC_seed_700-719.csv", test_accs_OBC, ',')
-writedlm("angus_correlation_alpha04_eta03_train_PBC_seed_700-719.csv", train_accs_PBC, ',')
-writedlm("angus_correlation_alpha04_eta03_test_PBC_seed_700-719.csv", test_accs_PBC, ',')
+# writedlm("angus_correlation_alpha04_eta03_train_OBC_seed_700-719.csv", train_accs_OBC, ',')
+# writedlm("angus_correlation_alpha04_eta03_test_OBC_seed_700-719.csv", test_accs_OBC, ',')
+# writedlm("angus_correlation_alpha04_eta03_train_PBC_seed_700-719.csv", train_accs_PBC, ',')
+# writedlm("angus_correlation_alpha04_eta03_test_PBC_seed_700-719.csv", test_accs_PBC, ',')

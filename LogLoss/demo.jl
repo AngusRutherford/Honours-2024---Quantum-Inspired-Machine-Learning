@@ -238,10 +238,24 @@ function makeDataSet(N, α, β, corr_location, rng)
     return x
 end
 
+# function makeDataSet(N, α, β, corr_location, rng)
+#     x = zeros(N)
+#     for i in N:-1:1
+#         if i == N
+#             x[i] = randn(rng)
+#         else
+#             x[i] = α * x[i+1] + randn(rng)
+#         end
+#     end
+#     x[N] += β * x[corr_location]
+#     return x
+# end
+
+
 seed_1 = 223
 seed_2 = 163
-α_1 = 0.4
-α_2 = -0.4
+α_1 = 0.8
+α_2 = 0.8
 N = 20
 M = 300
 #corr_loc = 2
@@ -253,10 +267,10 @@ test_accs_PBC = zeros(20, 19)
 # test_accs_OBC = []
 # train_accs_PBC = []
 # test_accs_PBC = []
-for betas = 0.1:0.1:2
+for betas = 0.8
     β_1 = betas
     β_2 = -betas
-    for corr_loc = 1:19
+    for corr_loc = 19
         rng_1 = MersenneTwister(seed_1)
         rng_2 = MersenneTwister(seed_2)
         dataset_1 = zeros(M, N)
@@ -280,8 +294,9 @@ for betas = 0.1:0.1:2
         encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "OBC", random_walk_seed = 100)
 
         W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
-        train_accs_OBC[Int(10*betas), corr_loc] = info["train_acc"][end]
-        test_accs_OBC[Int(10*betas), corr_loc] = info["test_acc"][end]
+        # train_accs_OBC[Int(10*betas), corr_loc] = info["train_acc"][end]
+        # test_accs_OBC[Int(10*betas), corr_loc] = info["test_acc"][end]
+        print(info["test_acc"])
         # push!(train_accs_OBC, maximum(info["train_acc"]))
         # push!(test_accs_OBC, maximum(info["test_acc"]))
 
@@ -290,8 +305,9 @@ for betas = 0.1:0.1:2
         encode_classes_separately=encode_classes_separately, train_classes_separately=train_classes_separately, algorithm = "PBC_left", random_walk_seed = 100)
 
         W, info, train_states, test_states, test_lists = fitMPS(X_train, y_train, X_test, y_test; random_state=1, chi_init=4, opts=opts, test_run=false)
-        train_accs_PBC[Int(10*betas), corr_loc] = info["train_acc"][end]
-        test_accs_PBC[Int(10*betas), corr_loc] = info["test_acc"][end]
+        # train_accs_PBC[Int(10*betas), corr_loc] = info["train_acc"][end]
+        # test_accs_PBC[Int(10*betas), corr_loc] = info["test_acc"][end]
+        print(info["test_acc"])
         # push!(train_accs_PBC, maximum(info["train_acc"]))
         # push!(test_accs_PBC, maximum(info["test_acc"]))
     end
